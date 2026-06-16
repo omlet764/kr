@@ -10,7 +10,8 @@ return function(Settings, WindUI, Net, ReplicatedStorage, Workspace, TweenServic
     -- متغیرهای داخلی ماژول
     -- ═══════════════════════════════════════
     local State = {
-        Enabled = false,
+        IsLevelUp = false,  -- وضعیت اتو لول آپ
+        IsKillAura = false, -- وضعیت کشتن ماب اطراف
         IsSafeToClick = true,
         
         QuestLocked = false,
@@ -27,7 +28,6 @@ return function(Settings, WindUI, Net, ReplicatedStorage, Workspace, TweenServic
         AttackMethod = "Click",
         
         BossInLevelUp = true,
-        KillSurrounding = false, -- ویژگی اضافه شده: کشتن ماب های اطراف
     }
     
     local SpawnCache = {}
@@ -360,11 +360,11 @@ return function(Settings, WindUI, Net, ReplicatedStorage, Workspace, TweenServic
     -- Tick: منطق اصلی لول آپ و مدیریت Cursed Ship
     -- ═══════════════════════════════════════
     local function Tick(Root, now)
-        if not State.Enabled then return end
+        -- اگه هیچ‌کدوم روشن نبود کلاً کار نکن
+        if not State.IsLevelUp and not State.IsKillAura then return end
 
-        -- 🟢 === بخش جدید: کشتن ماب های اطراف === 🟢
-        if State.KillSurrounding then
-            -- اگر الان روی یک ماب قفل هستیم و هنوز زنده است، ولش نکن
+        -- 🟢 === حالت 1: فقط کشتن ماب های اطراف === 🟢
+        if State.IsKillAura then
             if State.CurrentTarget and State.CurrentTarget.Mode == "Mob" and State.CurrentTarget.Instance then
                 if IsEnemyValid(State.CurrentTarget.Instance) then
                     PrepareEnemy(State.CurrentTarget.Instance)
@@ -377,7 +377,6 @@ return function(Settings, WindUI, Net, ReplicatedStorage, Workspace, TweenServic
                 end
             end
 
-            -- پیدا کردن نزدیک‌ترین ماب برای کشتن
             local nearest = nil
             local minDist = 350
             local enemies = Workspace:FindFirstChild("Enemies")
@@ -404,102 +403,91 @@ return function(Settings, WindUI, Net, ReplicatedStorage, Workspace, TweenServic
                 State.IsSafeToClick = false
             end
             
-            return -- 👈 این باعث میشه وقتی دکمه روشنه، کدهای کوئست پایین اصلاً اجرا نشن
+            return -- از تابع خارج میشه و نمیره سمت کدهای کوئست
         end
         -- 🔴 ===================================== 🔴
 
+        -- 🟢 === حالت 2: اتو لول آپ (کوئست) === 🟢
+        if State.IsLevelUp then
+            local QData = GetSmartQuest()
+            if not QData then return end
 
-        -- کدهای اورجینال خودت برای لول آپ از اینجا ادامه داره:
-        local QData = GetSmartQuest()
-        if not QData then return end
+            if Sea == 2 then
+                local shipCenter = Vector3.new(923, 126, 32852)
+                local inShip = (Root.Position - shipCenter).Magnitude < 3000
 
-        -- مدیریت ورود و خروج از Cursed Ship (مخصوص دریای دوم)
-        if Sea == 2 then
-            -- مختصات مرکز کشتی به صورت تقریبی
-            local shipCenter = Vector3.new(923, 126, 32852)
-            local inShip = (Root.Position - shipCenter).Magnitude < 3000
-
-            -- اگر لول کوئست بین 1250 تا 1325 است (نیاز به بودن در کشتی)
-            if QData.Lvl >= 1250 and QData.Lvl <= 1325 then
-                if not inShip then
-                    -- توقف حرکت قبل از تلپورت
+                if QData.Lvl >= 1250 and QData.Lvl <= 1325 then
+                    if not inShip then
+                        if State.ActiveTween then State.ActiveTween:Cancel(); State.ActiveTween = nil end
+                        pcall(function() ReplicatedStorage.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(923.213, 126.976, 32852.832)) end)
+                        task.wait(2)
+                        return
+                    end
+                elseif QData.Lvl > 1325 and inShip then
                     if State.ActiveTween then State.ActiveTween:Cancel(); State.ActiveTween = nil end
-                    pcall(function()
-                        ReplicatedStorage.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(923.213, 126.976, 32852.832))
-                    end)
+                    pcall(function() ReplicatedStorage.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-6508.558, 89.035, -132.84)) end)
                     task.wait(2)
-                    return -- متوقف کردن بقیه کدها تا تلپورت کامل شود
+                    return
                 end
-            -- اگر لول کوئست بیشتر از 1325 است (یا کمتر) و پلیر داخل کشتی گیر کرده
-            elseif QData.Lvl > 1325 and inShip then
-                -- توقف حرکت قبل از تلپورت
-                if State.ActiveTween then State.ActiveTween:Cancel(); State.ActiveTween = nil end
-                pcall(function()
-                    ReplicatedStorage.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-6508.558, 89.035, -132.84))
-                end)
-                task.wait(2)
-                return -- متوقف کردن بقیه کدها تا تلپورت کامل شود
-            end
-        end
-
-        -- ادامه روند عادی لول‌آپ
-        if HasQuest() then
-            State.IsSafeToClick = true
-            
-            if not State.QuestLocked then
-                State.QuestLocked = true
-                State.LockedQuestData = QData
             end
 
-            if State.CurrentTarget and State.CurrentTarget.Mode == "Mob" and State.CurrentTarget.Instance then
-                if IsEnemyValid(State.CurrentTarget.Instance) then
-                    PrepareEnemy(State.CurrentTarget.Instance); return
+            if HasQuest() then
+                State.IsSafeToClick = true
+                if not State.QuestLocked then
+                    State.QuestLocked = true
+                    State.LockedQuestData = QData
+                end
+
+                if State.CurrentTarget and State.CurrentTarget.Mode == "Mob" and State.CurrentTarget.Instance then
+                    if IsEnemyValid(State.CurrentTarget.Instance) then
+                        PrepareEnemy(State.CurrentTarget.Instance); return
+                    else
+                        CleanupExpandedHead(State.CurrentTarget.Instance)
+                        if State.CurrentExpandedEnemy == State.CurrentTarget.Instance then State.CurrentExpandedEnemy = nil end
+                        State.CurrentTarget = nil
+                    end
+                end
+
+                local fm, md = nil, math.huge
+                local targetMob = State.LockedQuestData.Mob
+                if Workspace:FindFirstChild("Enemies") then
+                    for _, v in pairs(Workspace.Enemies:GetChildren()) do
+                        pcall(function()
+                            if string.find(v.Name, targetMob) and IsEnemyValid(v) then
+                                local d = (Root.Position - v.HumanoidRootPart.Position).Magnitude
+                                if d < md then md = d; fm = v end
+                            end
+                        end)
+                    end
+                end
+
+                if fm then
+                    PrepareEnemy(fm)
+                    State.CurrentTarget = {Mode="Mob", Instance=fm}
+                    State.LastKnownSpawn = fm.HumanoidRootPart.CFrame
                 else
-                    CleanupExpandedHead(State.CurrentTarget.Instance)
-                    if State.CurrentExpandedEnemy == State.CurrentTarget.Instance then State.CurrentExpandedEnemy = nil end
-                    State.CurrentTarget = nil
+                    if State.CurrentExpandedEnemy then CleanupExpandedHead(State.CurrentExpandedEnemy); State.CurrentExpandedEnemy = nil end
+                    local sp = GetAggressiveSpawn(targetMob)
+                    if sp then State.CurrentTarget = {Mode="Wait", CFrame=sp*CFrame.new(0,Settings.WaitHeight,0)}
+                    elseif State.LastKnownSpawn then State.CurrentTarget = {Mode="Wait", CFrame=State.LastKnownSpawn*CFrame.new(0,Settings.WaitHeight,0)}
+                    else State.CurrentTarget = {Mode="Wait", CFrame=QData.Pos*CFrame.new(0,50,0)} end
                 end
-            end
-
-            local fm, md = nil, math.huge
-            local targetMob = State.LockedQuestData.Mob
-            if Workspace:FindFirstChild("Enemies") then
-                for _, v in pairs(Workspace.Enemies:GetChildren()) do
-                    pcall(function()
-                        if string.find(v.Name, targetMob) and IsEnemyValid(v) then
-                            local d = (Root.Position - v.HumanoidRootPart.Position).Magnitude
-                            if d < md then md = d; fm = v end
-                        end
-                    end)
-                end
-            end
-
-            if fm then
-                PrepareEnemy(fm)
-                State.CurrentTarget = {Mode="Mob", Instance=fm}
-                State.LastKnownSpawn = fm.HumanoidRootPart.CFrame
             else
+                if State.QuestLocked then 
+                    State.QuestLocked = false; State.LockedQuestData = nil 
+                end
+
                 if State.CurrentExpandedEnemy then CleanupExpandedHead(State.CurrentExpandedEnemy); State.CurrentExpandedEnemy = nil end
-                local sp = GetAggressiveSpawn(targetMob)
-                if sp then State.CurrentTarget = {Mode="Wait", CFrame=sp*CFrame.new(0,Settings.WaitHeight,0)}
-                elseif State.LastKnownSpawn then State.CurrentTarget = {Mode="Wait", CFrame=State.LastKnownSpawn*CFrame.new(0,Settings.WaitHeight,0)}
-                else State.CurrentTarget = {Mode="Wait", CFrame=QData.Pos*CFrame.new(0,50,0)} end
-            end
-        else
-            if State.QuestLocked then 
-                State.QuestLocked = false; State.LockedQuestData = nil 
-            end
+                State.LastKnownSpawn = nil
+                State.IsSafeToClick = false
 
-            if State.CurrentExpandedEnemy then CleanupExpandedHead(State.CurrentExpandedEnemy); State.CurrentExpandedEnemy = nil end
-            State.LastKnownSpawn = nil
-            State.IsSafeToClick = false
+                local freshQData = GetSmartQuest()
+                if not freshQData then return end
 
-            local freshQData = GetSmartQuest()
-            if not freshQData then return end
-
-            State.CurrentTarget = {Mode="NPC", CFrame=freshQData.Pos}
-            if (Root.Position - freshQData.Pos.Position).Magnitude < 15 then
-                pcall(function() ReplicatedStorage.Remotes.CommF_:InvokeServer("StartQuest", freshQData.QName, freshQData.QId) end)
+                State.CurrentTarget = {Mode="NPC", CFrame=freshQData.Pos}
+                if (Root.Position - freshQData.Pos.Position).Magnitude < 15 then
+                    pcall(function() ReplicatedStorage.Remotes.CommF_:InvokeServer("StartQuest", freshQData.QName, freshQData.QId) end)
+                end
             end
         end
     end
@@ -510,7 +498,7 @@ return function(Settings, WindUI, Net, ReplicatedStorage, Workspace, TweenServic
     task.spawn(function()
         while task.wait(0.1) do
             pcall(function()
-                if not State.Enabled or not State.IsSafeToClick then return end
+                if not (State.IsLevelUp or State.IsKillAura) or not State.IsSafeToClick then return end
                 if not State.CurrentTarget or State.CurrentTarget.Mode ~= "Mob" or not State.CurrentTarget.Instance then return end
 
                 local E = State.CurrentTarget.Instance
@@ -545,7 +533,7 @@ return function(Settings, WindUI, Net, ReplicatedStorage, Workspace, TweenServic
     task.spawn(function()
         while task.wait(0.1) do
             pcall(function()
-                if not State.Enabled then return end
+                if not (State.IsLevelUp or State.IsKillAura) then return end
                 if not Plr.Character or not Plr.Character:FindFirstChild("HumanoidRootPart") then return end
                 local Root = Plr.Character.HumanoidRootPart
                 local Dest = nil
@@ -584,7 +572,7 @@ return function(Settings, WindUI, Net, ReplicatedStorage, Workspace, TweenServic
 
     RunService.Heartbeat:Connect(function()
         pcall(function()
-            if not State.Enabled then return end
+            if not (State.IsLevelUp or State.IsKillAura) then return end
             if Plr.Character then
                 for _, p in pairs(Plr.Character:GetDescendants()) do if p:IsA("BasePart") then p.CanCollide = false end end
                 if Plr.Character:FindFirstChild("HumanoidRootPart") then Plr.Character.HumanoidRootPart.Velocity = Vector3.zero end
@@ -597,15 +585,23 @@ return function(Settings, WindUI, Net, ReplicatedStorage, Workspace, TweenServic
     -- ═══════════════════════════════════════
     local API = {}
 
+    -- شروع/پایان لول آپ عادی
     function API.Start()
-        State.Enabled = true
+        State.IsLevelUp = true
         State.IsSafeToClick = true
         State.QuestLocked = false
         State.LockedQuestData = nil
     end
 
+    -- شروع/پایان کشتن ماب های اطراف
+    function API.StartKillAura()
+        State.IsKillAura = true
+        State.IsSafeToClick = true
+    end
+
     function API.Stop()
-        State.Enabled = false
+        State.IsLevelUp = false
+        State.IsKillAura = false
         State.CurrentTarget = nil
         State.QuestLocked = false
         State.LockedQuestData = nil
@@ -617,8 +613,8 @@ return function(Settings, WindUI, Net, ReplicatedStorage, Workspace, TweenServic
     function API.SetWeaponMode(mode) State.WeaponMode = mode end
     function API.SetAttackMethod(method) State.AttackMethod = method end
     function API.SetBossInLevelUp(val) State.BossInLevelUp = val end
-    function API.SetKillAura(val) State.KillSurrounding = val end -- 👈 این تابع متصل کننده دکمه به اسکریپت اصلیه
     function API.Tick(Root, now) Tick(Root, now) end
+    function API.GetCurrentTarget() return State.CurrentTarget end
 
     return API
 end
