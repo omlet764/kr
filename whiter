@@ -1,61 +1,25 @@
--- Omlet Hub Data Module (Databases)
-local DataModule = {}
-
-function DataModule.GetSeaData(Sea)
-    local BossDatabase, ChestIslands, IslandData = {}, {}, {}
-    local FightingStyles = {}
-
-    if Sea == 1 then
-        BossDatabase = {{Lvl=20,Mob="Gorilla King",QName="JungleQuest",QId=3,Pos=CFrame.new(-1131,6,1642)},{Lvl=55,Mob="Bobby",QName="BuggyQuest1",QId=3,Pos=CFrame.new(-1140,5,3830)},{Lvl=115,Mob="Yeti",QName="SnowQuest",QId=3,Pos=CFrame.new(1386,87,-1299)},{Lvl=130,Mob="Vice Admiral",QName="MarineQuest2",QId=2,Pos=CFrame.new(-5036,28,4325)},{Lvl=210,Mob="Warden",QName="PrisonerQuest",QId=2,Pos=CFrame.new(5308,2,475)},{Lvl=220,Mob="Chief Warden",QName="PrisonerQuest",QId=3,Pos=CFrame.new(5308,2,475)},{Lvl=230,Mob="Swan",QName="PrisonerQuest",QId=4,Pos=CFrame.new(5308,2,475)},{Lvl=350,Mob="Magma Admiral",QName="MagmaQuest",QId=3,Pos=CFrame.new(-5315,12,8516)},{Lvl=425,Mob="Fishman Lord",QName="FishmanQuest",QId=3,Pos=CFrame.new(61122,19,1568)},{Lvl=500,Mob="Wysper",QName="SkyExp1Quest",QId=3,Pos=CFrame.new(-7860,5545,-381)},{Lvl=575,Mob="Thunder God",QName="SkyExp2Quest",QId=3,Pos=CFrame.new(-7904,5636,-1412)},{Lvl=675,Mob="Cyborg",QName="FountainQuest",QId=3,Pos=CFrame.new(5259,39,4050)},{Lvl=700,Mob="Ice Admiral",QName="FountainQuest",QId=4,Pos=CFrame.new(5259,39,4050)}}
-        ChestIslands = {{Name="جزیره شروع",Pos=Vector3.new(1060,17,1549)},{Name="جنگل",Pos=Vector3.new(-1602,37,154)},{Name="باگی",Pos=Vector3.new(-1140,5,3830)},{Name="بیابان",Pos=Vector3.new(897,7,4390)},{Name="جزیره برفی",Pos=Vector3.new(1386,87,-1299)},{Name="پایگاه تفنگدار",Pos=Vector3.new(-5036,28,4325)},{Name="جزیره آسمان",Pos=Vector3.new(-4840,717,-2620)},{Name="زندان",Pos=Vector3.new(5308,2,475)},{Name="کولوسئوم",Pos=Vector3.new(-1576,8,-2985)},{Name="مگما",Pos=Vector3.new(-5315,12,8516)},{Name="ماهی‌مرد",Pos=Vector3.new(61122,19,1568)},{Name="آسمان ۱",Pos=Vector3.new(-4722,845,-1951)},{Name="آسمان ۲",Pos=Vector3.new(-7904,5636,-1412)},{Name="فواره",Pos=Vector3.new(5259,39,4050)}}
-        IslandData = { ["Starter Island"] = CFrame.new(1060, 17, 1549), ["Jungle"] = CFrame.new(-1602, 37, 154), ["Pirate Village"] = CFrame.new(-1140, 5, 3830), ["Desert"] = CFrame.new(897, 7, 4390), ["Snow Island"] = CFrame.new(1386, 87, -1299), ["Marine Fortress"] = CFrame.new(-5036, 28, 4325), ["Skylands"] = CFrame.new(-4840, 717, -2620), ["Prison"] = CFrame.new(5308, 2, 475), ["Colosseum"] = CFrame.new(-1576, 8, -2985), ["Magma Village"] = CFrame.new(-5315, 12, 8516), ["Underwater City"] = CFrame.new(61122, 19, 1568), ["Fountain City"] = CFrame.new(5259, 39, 4050) }
-        FightingStyles = {
-            { Name = "Dark Step", RemoteArg = "BuyBlackLeg", NPCPos = CFrame.new(-986, 13, 3988), Cost = 150000, Fragments = 0, },
-            { Name = "Electric", RemoteArg = "BuyElectro", NPCPos = CFrame.new(-5386, 13, -2149), Cost = 500000, Fragments = 0, },
-            { Name = "Water Kung Fu", RemoteArg = "BuyFishmanKarate", NPCPos = CFrame.new(61583, 18, 987), Cost = 750000, Fragments = 0, }
-        }
-    elseif Sea == 2 then
-        BossDatabase = {{Lvl=750,Mob="Diamond",QName="Area1Quest",QId=3,Pos=CFrame.new(-425,73,1835)},{Lvl=850,Mob="Jeremy",QName="Area2Quest",QId=3,Pos=CFrame.new(637,72,917)},{Lvl=925,Mob="Orbitus",QName="MarineQuest3",QId=3,Pos=CFrame.new(-2442,75,-3219)},{Lvl=1150,Mob="Smoke Admiral",QName="IceSideQuest",QId=3,Pos=CFrame.new(-6230,81,-4850)},{Lvl=1400,Mob="Awakened Ice Admiral",QName="FrostQuest",QId=3,Pos=CFrame.new(6115,29,-6222)},{Lvl=1475,Mob="Tide Keeper",QName="ForgottenQuest",QId=3,Pos=CFrame.new(-3053,237,-10146)}}
-        ChestIslands = {{Name="پادشاهی رز",Pos=Vector3.new(-425,73,1835)},{Name="کارخانه",Pos=Vector3.new(634,75,949)},{Name="پایگاه تفنگدار",Pos=Vector3.new(-2442,75,-3219)},{Name="جزیره زامبی",Pos=Vector3.new(-5492,49,-794)},{Name="کوه برفی",Pos=Vector3.new(606,402,-5369)},{Name="سمت یخ",Pos=Vector3.new(-6230,81,-4850)},{Name="سمت آتش",Pos=Vector3.new(-5430,16,-5295)},{Name="جزیره وایتبرد",Pos=Vector3.new(1955,28,-3108)},{Name="جزیره تاریکی",Pos=Vector3.new(-1500,14,-1500)},{Name="جزیره گوسفند",Pos=Vector3.new(-3100,12,3800)},{Name="کشتی ۱",Pos=Vector3.new(921,126,32832)},{Name="کشتی ۲",Pos=Vector3.new(912,126,33198)},{Name="جزیره یخبندان",Pos=Vector3.new(6115,29,-6222)},{Name="جزیره فراموش شده",Pos=Vector3.new(-3053,237,-10146)},{Name="جزیره ماهی‌مرد دوم",Pos=Vector3.new(2200,14,1100)},{Name="جزیره لاک‌پشت",Pos=Vector3.new(-4700,19,-1800)}}
-        IslandData = { ["Kingdom of Rose"] = CFrame.new(-425, 73, 1835), ["Cafe"] = CFrame.new(-380, 73, 255), ["Usopp Island"] = CFrame.new(4816, 8, 2863), ["Green Zone"] = CFrame.new(-2442, 75, -3219), ["Graveyard"] = CFrame.new(-5492, 49, -794), ["Snow Mountain"] = CFrame.new(606, 402, -5369), ["Hot and Cold"] = CFrame.new(-5430, 16, -5295), ["Cursed Ship"] = "Special_CursedShip", ["Ice Castle"] = CFrame.new(6115, 29, -6222), ["Forgotten Island"] = CFrame.new(-3053, 237, -10146), ["Dark Arena"] = CFrame.new(3800, 20, -3500) }
-        FightingStyles = {
-            { Name = "Dark Step", RemoteArg = "BuyBlackLeg", NPCPos = CFrame.new(-4842, 34, -4745), Cost = 150000, Fragments = 0, },
-            { Name = "Electric", RemoteArg = "BuyElectro", NPCPos = CFrame.new(-4842, 34, -4745), Cost = 500000, Fragments = 0, },
-            { Name = "Water Kung Fu", RemoteArg = "BuyFishmanKarate", NPCPos = CFrame.new(-4842, 34, -4745), Cost = 750000, Fragments = 0, },
-            { Name = "Sharkman Karate", RemoteArg = "BuySharkmanKarate", NPCPos = CFrame.new(-2601, 238, -10314), Cost = 2500000, Fragments = 5000, ReqStyleName = "Water Kung Fu", ReqCheck = {"BuyFishmanKarate", true}, ReqEquip = {"BuyFishmanKarate"}, EquipPos = CFrame.new(-4842, 34, -4745), ReqMastery = 400, ReqKey = true, BossName = "Tide Keeper", BossPos = CFrame.new(-3053, 237, -10146) },
-            { Name = "Death Step", RemoteArg = "BuyDeathStep", NPCPos = CFrame.new(6359, 296, -6764), Cost = 2500000, Fragments = 5000, ReqStyleName = "Dark Step", ReqCheck = {"BuyBlackLeg", true}, ReqEquip = {"BuyBlackLeg"}, EquipPos = CFrame.new(-4842, 34, -4745), ReqMastery = 400, }
-        }
-    elseif Sea == 3 then
-        BossDatabase = {{Lvl=1550,Mob="Stone",QName="PiratePortQuest",QId=3,Pos=CFrame.new(-288,43,5433)},{Lvl=1675,Mob="Island Empress",QName="AmazonQuest2",QId=3,Pos=CFrame.new(5449,602,750)},{Lvl=1750,Mob="Kilo Admiral",QName="MarineTreeIsland",QId=3,Pos=CFrame.new(2182,28,-6738)},{Lvl=1875,Mob="Captain Elephant",QName="DeepForestIsland2",QId=3,Pos=CFrame.new(-10332,331,-8912)},{Lvl=1950,Mob="Beautiful Pirate",QName="HauntedQuest1",QId=3,Pos=CFrame.new(-9515,142,5537)},{Lvl=2250,Mob="Ice Cream Queen",QName="IceCreamIslandQuest",QId=3,Pos=CFrame.new(-818,65,-10965)}}
-        ChestIslands = {{Name="بندر دزدان دریایی",Pos=Vector3.new(-288,43,5433)},{Name="جزیره هیدرا",Pos=Vector3.new(5228,18,345)},{Name="آمازون لیلی",Pos=Vector3.new(5833,52,-1103)},{Name="آمازون بالا",Pos=Vector3.new(5449,602,750)},{Name="جزیره درخت دریایی",Pos=Vector3.new(2182,28,-6738)},{Name="درخت بزرگ",Pos=Vector3.new(2300,50,-6800)},{Name="قلعه روی دریا",Pos=Vector3.new(-5000,300,-3000)},{Name="جنگل عمیق ۱",Pos=Vector3.new(-10582,331,-8758)},{Name="جنگل عمیق ۲",Pos=Vector3.new(-10332,331,-8912)},{Name="عمارت",Pos=Vector3.new(-12488,332,-7553)},{Name="لاکپشت شناور",Pos=Vector3.new(-13200,500,-7600)},{Name="قلعه تسخیر شده",Pos=Vector3.new(-9515,142,5537)},{Name="جزیره بادام زنینی",Pos=Vector3.new(-2022,37,-12025)},{Name="جزیره بستنی",Pos=Vector3.new(-818,65,-10965)},{Name="جزیره کیک ۱",Pos=Vector3.new(-2020,37,-12025)},{Name="جزیره کیک ۲",Pos=Vector3.new(-1926,37,-12850)},{Name="جزیره آبنبات",Pos=Vector3.new(-1149,13,-12836)},{Name="جزیره تیکی ۱",Pos=Vector3.new(-16547,55,-172)},{Name="جزیره تیکی ۲",Pos=Vector3.new(-16540,55,1054)},{Name="جزیره تیکی ۳",Pos=Vector3.new(-16667,105,1579)},{Name="شهر بندری",Pos=Vector3.new(-290,10,5500)},{Name="زیر آب ۱",Pos=Vector3.new(10779,-2088,9262),IsSubmerged=true},{Name="زیر آب ۲",Pos=Vector3.new(10883,-2087,10032),IsSubmerged=true},{Name="زیر آب ۳",Pos=Vector3.new(9639,-1993,9616),IsSubmerged=true}}
-        IslandData = { ["Port Town"] = CFrame.new(-288, 43, 5433), ["Hydra Island"] = CFrame.new(5228, 18, 345), ["Great Tree"] = CFrame.new(2300, 50, -6800), ["Floating Turtle (Mansion)"] = CFrame.new(-12488, 332, -7553), ["Castle on the Sea"] = CFrame.new(-5000, 315, -3000), ["Haunted Castle"] = CFrame.new(-9515, 142, 5537), ["Peanut Island"] = CFrame.new(-2022, 37, -12025), ["Ice Cream Island"] = CFrame.new(-818, 65, -10965), ["Cake Island"] = CFrame.new(-1926, 37, -12850), ["Chocolate Island"] = CFrame.new(-1149, 13, -12836), ["Tiki Outpost"] = CFrame.new(-16234, 9, 331), ["Submerged Island"] = "Special_Submerged" }
-    end
-
-    local IslandNames = {}
-    for name, _ in pairs(IslandData) do table.insert(IslandNames, name) end
-    table.sort(IslandNames)
-
-    local RAID_TYPES = { ["Flame"]="Flame", ["Ice"]="Ice", ["Quake"]="Quake", ["Light"]="Light", ["Dark"]="Dark", ["Spider"]="Spider", ["Rumble"]="Rumble", ["Magma"]="Magma", ["Buddha"]="Human: Buddha", ["Sand"]="Sand", ["Phoenix"]="Phoenix", ["Dough"]="Dough" }
-    local RAID_FRUITS = { "Rocket-Rocket","Spin-Spin","Chop-Chop","Spring-Spring","Bomb-Bomb","Spike-Spike","Flame-Flame","Falcon-Falcon","Ice-Ice","Sand-Sand","Dark-Dark","Diamond-Diamond","Light-Light","Rubber-Rubber","Barrier-Barrier","Ghost-Ghost","Magma-Magma","Quake-Quake","Buddha-Buddha","Love-Love","Spider-Spider","Sound-Sound","Phoenix-Phoenix","Portal-Portal","Rumble-Rumble","Pain-Pain","Blizzard-Blizzard","Gravity-Gravity","Mammoth-Mammoth","T-Rex-T-Rex","Dough-Dough","Shadow-Shadow","Venom-Venom","Control-Control","Spirit-Spirit","Dragon-Dragon","Leopard-Leopard","Kitsune-Kitsune" }
-    
-    local DisplayFruitNames, FruitRealNamesMap = {}, {}
-    for _, f in ipairs(RAID_FRUITS) do 
-        local clean = string.split(f, "-")[1] or f
-        table.insert(DisplayFruitNames, clean)
-        FruitRealNamesMap[clean] = f 
-    end
-
-    local NearestQuestDB = {
-        ["Water Fighter"] = {QName = "ForgottenQuest", QId = 2, Pos = CFrame.new(-3065, 235, -10142)},
+-- FightingStyleModule.lua
+return function(WindUI, ReplicatedStorage, Workspace, Plr)
+    local Module = {
+        Active = false,
+        Mode = "None", -- "FS" یا "SH"
+        Phase = "Idle",
+        CurrentStyle = nil,
+        SHIndex = 1,
+        TargetMob = nil,
+        Dest = nil,
+        QuestEnabled = true,
+        BossTarget = nil
     }
 
-    local MasteryMobData = {
-        Mob = "Water Fighter",
-        QName = "ForgottenQuest",
-        QId = 2,
-        NPCPos = CFrame.new(-3065, 235, -10142),
-        MobPos = CFrame.new(-3300, 237, -10400)
-    }
+    local Sea = 1
+    local Map = Workspace:WaitForChild("Map", 5)
+    if Map then
+        if Map:FindFirstChild("Dressrosa") or Map:FindFirstChild("Water7") then Sea = 2
+        elseif Map:FindFirstChild("Zou") or Map:FindFirstChild("Turtle") then Sea = 3 end
+    end
+
+    local MasteryMobData = { Mob = "Water Fighter", QName = "ForgottenQuest", QId = 2, Pos = CFrame.new(-3053, 237, -10146) }
 
     local SHStyles = {
         {Name = "Dark Step", Check = {"BuyBlackLeg", true}, Equip = {"BuyBlackLeg"}, NPCPos = CFrame.new(-4842, 34, -4745)},
@@ -64,19 +28,111 @@ function DataModule.GetSeaData(Sea)
         {Name = "Dragon Claw", Check = {"BlackbeardReward", "DragonClaw", "1"}, Equip = {"BlackbeardReward", "DragonClaw", "2"}, NPCPos = CFrame.new(710, 186, 653)}
     }
 
-    return {
-        BossDatabase = BossDatabase,
-        ChestIslands = ChestIslands,
-        IslandData = IslandData,
-        IslandNames = IslandNames,
-        FightingStyles = FightingStyles,
-        RAID_TYPES = RAID_TYPES,
-        DisplayFruitNames = DisplayFruitNames,
-        FruitRealNamesMap = FruitRealNamesMap,
-        NearestQuestDB = NearestQuestDB,
-        MasteryMobData = MasteryMobData,
-        SHStyles = SHStyles
-    }
-end
+    local function GetMeleeMastery(styleName)
+        local function checkTool(tool)
+            if tool and tool:IsA("Tool") and tool.ToolTip == "Melee" then
+                if styleName then if string.lower(tool.Name):find(string.lower(styleName)) then local lvl = tool:FindFirstChild("Level"); return tool.Name, lvl and lvl.Value or 0 end
+                else local lvl = tool:FindFirstChild("Level"); return tool.Name, lvl and lvl.Value or 0 end
+            end; return nil, 0
+        end
+        if Plr.Character then for _, tool in pairs(Plr.Character:GetChildren()) do local n, v = checkTool(tool); if n then return n, v end end end
+        for _, tool in pairs(Plr.Backpack:GetChildren()) do local n, v = checkTool(tool); if n then return n, v end end
+        return "هیچ میلی پیدا نشد", 0
+    end
 
-return DataModule
+    local function GetPlayerBeli() local s, v = pcall(function() return Plr.Data.Beli.Value end); return s and v or 0 end
+    local function GetPlayerFragments() local s, v = pcall(function() return Plr.Data.Fragments.Value end); return s and v or 0 end
+    local function HasWaterKey() return Plr.Backpack:FindFirstChild("Water Key") ~= nil or (Plr.Character and Plr.Character:FindFirstChild("Water Key") ~= nil) end
+    local function HasQuest() local s, v = pcall(function() return Plr.PlayerGui.Main.Quest.Visible end); return s and v == true end
+
+    local function IsEnemyValid(E) if not E or not E.Parent then return false end; local h = E:FindFirstChild("Humanoid"); if not h or h.Health <= 0 then return false end; return E:FindFirstChild("HumanoidRootPart") ~= nil end
+    local function FindEnemy(mobName)
+        local root = Plr.Character and Plr.Character:FindFirstChild("HumanoidRootPart"); if not root then return nil end
+        local fm, md = nil, math.huge; local enemies = Workspace:FindFirstChild("Enemies")
+        if enemies then for _, v in pairs(enemies:GetChildren()) do pcall(function() if string.find(v.Name, mobName) and IsEnemyValid(v) then local d = (root.Position - v.HumanoidRootPart.Position).Magnitude; if d < md then md = d; fm = v end end end) end end
+        return fm
+    end
+
+    function Module.StartFS(style) Module.Active = true; Module.Mode = "FS"; Module.CurrentStyle = style; Module.Phase = "CheckRequirements" end
+    function Module.StartSH() Module.Active = true; Module.Mode = "SH"; Module.Phase = "Check"; Module.SHIndex = 1 end
+    function Module.Stop() Module.Active = false; Module.Phase = "Idle"; Module.TargetMob = nil; Module.CurrentStyle = nil end
+
+    function Module.Tick()
+        if not Module.Active then return nil end
+        local root = Plr.Character and Plr.Character:FindFirstChild("HumanoidRootPart")
+        if not root then return nil end
+
+        if Module.Mode == "FS" and Module.CurrentStyle then
+            local style = Module.CurrentStyle
+            if Module.Phase == "CheckRequirements" then
+                if GetPlayerBeli() < style.Cost or (style.Fragments and GetPlayerFragments() < style.Fragments) then Module.Stop(); return nil end
+                if style.ReqStyleName then
+                    local res = ReplicatedStorage.Remotes.CommF_:InvokeServer(unpack(style.ReqCheck))
+                    if tostring(res) ~= "1" then Module.Stop(); return nil end
+                    local _, mastery = GetMeleeMastery(style.ReqStyleName)
+                    if mastery < style.ReqMastery then Module.Phase = "EquipReq"; return nil end
+                end
+                if style.ReqKey and not HasWaterKey() then Module.Phase = "FarmBoss"; return nil end
+                Module.Phase = "GoToNPC"
+            elseif Module.Phase == "EquipReq" then
+                Module.TargetMob = nil; Module.Dest = style.EquipPos
+                if (root.Position - style.EquipPos.Position).Magnitude < 15 then ReplicatedStorage.Remotes.CommF_:InvokeServer(unpack(style.ReqEquip)); task.wait(1.5); Module.Phase = "MasteryFarm" end
+            elseif Module.Phase == "MasteryFarm" then
+                local _, mastery = GetMeleeMastery(style.ReqStyleName)
+                if mastery >= style.ReqMastery then Module.Phase = "CheckRequirements"; return nil end
+                if Module.QuestEnabled then
+                    if HasQuest() then local mob = FindEnemy(MasteryMobData.Mob); if mob then Module.TargetMob = mob else Module.TargetMob = nil; Module.Dest = MasteryMobData.Pos * CFrame.new(0, 50, 0) end
+                    else Module.TargetMob = nil; Module.Dest = MasteryMobData.Pos; if (root.Position - MasteryMobData.Pos.Position).Magnitude < 15 then pcall(function() ReplicatedStorage.Remotes.CommF_:InvokeServer("StartQuest", MasteryMobData.QName, MasteryMobData.QId) end); task.wait(0.5) end end
+                else
+                    local mob = FindEnemy(MasteryMobData.Mob); if mob then Module.TargetMob = mob else Module.TargetMob = nil; Module.Dest = MasteryMobData.Pos * CFrame.new(0, 50, 0) end
+                end
+            elseif Module.Phase == "FarmBoss" then
+                if HasWaterKey() then Module.Phase = "GoToNPC"; return nil end
+                local boss = FindEnemy(style.BossName); if boss then Module.TargetMob = boss else Module.TargetMob = nil; Module.Dest = style.BossPos * CFrame.new(0, 50, 0) end
+            elseif Module.Phase == "GoToNPC" then
+                Module.TargetMob = nil; Module.Dest = style.NPCPos
+                if (root.Position - style.NPCPos.Position).Magnitude < 15 then Module.Phase = "Buy" end
+            elseif Module.Phase == "Buy" then
+                ReplicatedStorage.Remotes.CommF_:InvokeServer(style.RemoteArg); task.wait(1)
+                Module.Stop()
+            end
+
+        elseif Module.Mode == "SH" then
+            if Module.Phase == "Check" then
+                if GetPlayerBeli() < 3000000 then Module.Stop(); return nil end
+                Module.Phase = "ProcessStyle"; Module.SHIndex = 1
+            elseif Module.Phase == "ProcessStyle" then
+                if Module.SHIndex > 4 then Module.Phase = "BuySH"; return nil end
+                local style = SHStyles[Module.SHIndex]
+                Module.TargetMob = nil; Module.Dest = style.NPCPos
+                if (root.Position - style.NPCPos.Position).Magnitude < 15 then
+                    ReplicatedStorage.Remotes.CommF_:InvokeServer(unpack(style.Equip)); task.wait(1.5)
+                    local _, mastery = GetMeleeMastery()
+                    if mastery >= 300 then Module.SHIndex = Module.SHIndex + 1 else Module.Phase = "Farm" end
+                end
+            elseif Module.Phase == "Farm" then
+                local _, mastery = GetMeleeMastery()
+                if mastery >= 300 then Module.Phase = "ProcessStyle"; return nil end
+                if Module.QuestEnabled then
+                    if HasQuest() then local mob = FindEnemy(MasteryMobData.Mob); if mob then Module.TargetMob = mob else Module.TargetMob = nil; Module.Dest = MasteryMobData.Pos * CFrame.new(0, 50, 0) end
+                    else Module.TargetMob = nil; Module.Dest = MasteryMobData.Pos; if (root.Position - MasteryMobData.Pos.Position).Magnitude < 15 then pcall(function() ReplicatedStorage.Remotes.CommF_:InvokeServer("StartQuest", MasteryMobData.QName, MasteryMobData.QId) end); task.wait(0.5) end end
+                else
+                    local mob = FindEnemy(MasteryMobData.Mob); if mob then Module.TargetMob = mob else Module.TargetMob = nil; Module.Dest = MasteryMobData.Pos * CFrame.new(0, 50, 0) end
+                end
+            elseif Module.Phase == "BuySH" then
+                Module.TargetMob = nil; Module.Dest = CFrame.new(1400, 247, -5181)
+                if (root.Position - Module.Dest.Position).Magnitude < 15 then
+                    ReplicatedStorage.Remotes.CommF_:InvokeServer("BuySuperhuman"); task.wait(1)
+                    Module.Stop()
+                end
+            end
+        end
+
+        -- بازگرداندن تارگت برای اسکریپت اصلی
+        if Module.TargetMob then return {Mode = "Mob", Instance = Module.TargetMob}
+        elseif Module.Dest then return {Mode = (Module.QuestEnabled and not HasQuest()) and "NPC" or "Wait", CFrame = Module.Dest} end
+        return nil
+    end
+
+    return Module
+end
